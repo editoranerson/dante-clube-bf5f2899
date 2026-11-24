@@ -14,16 +14,391 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      associates: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          dante_avatar_id: string | null
+          email: string
+          full_name: string
+          id: string
+          main_user_id: string
+          member_number: number
+          status: string
+          validation_code: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          dante_avatar_id?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          main_user_id: string
+          member_number?: number
+          status?: string
+          validation_code?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          dante_avatar_id?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          main_user_id?: string
+          member_number?: number
+          status?: string
+          validation_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "associates_dante_avatar_id_fkey"
+            columns: ["dante_avatar_id"]
+            isOneToOne: false
+            referencedRelation: "dante_avatars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      dante_avatars: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_default: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_default?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_default?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string
+          id: string
+          platform: string
+          reward: string
+          sort_order: number
+          steps: string[]
+          title: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          platform?: string
+          reward?: string
+          sort_order?: number
+          steps?: string[]
+          title: string
+          url?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          platform?: string
+          reward?: string
+          sort_order?: number
+          steps?: string[]
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      offer_coupons: {
+        Row: {
+          assigned_at: string | null
+          associate_id: string | null
+          code: string
+          created_at: string
+          id: string
+          offer_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          associate_id?: string | null
+          code: string
+          created_at?: string
+          id?: string
+          offer_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          associate_id?: string | null
+          code?: string
+          created_at?: string
+          id?: string
+          offer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_coupons_associate_id_fkey"
+            columns: ["associate_id"]
+            isOneToOne: false
+            referencedRelation: "associates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_coupons_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offers: {
+        Row: {
+          action_type: string
+          action_url: string | null
+          active: boolean
+          address: string | null
+          category_id: string | null
+          coupon_code: string | null
+          coupon_mode: string
+          cover_url: string | null
+          created_at: string
+          description: string
+          discount_label: string
+          featured: boolean
+          id: string
+          store_id: string
+          title: string
+        }
+        Insert: {
+          action_type?: string
+          action_url?: string | null
+          active?: boolean
+          address?: string | null
+          category_id?: string | null
+          coupon_code?: string | null
+          coupon_mode?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string
+          discount_label?: string
+          featured?: boolean
+          id?: string
+          store_id: string
+          title: string
+        }
+        Update: {
+          action_type?: string
+          action_url?: string | null
+          active?: boolean
+          address?: string | null
+          category_id?: string | null
+          coupon_code?: string | null
+          coupon_mode?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string
+          discount_label?: string
+          featured?: boolean
+          id?: string
+          store_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          content: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      stores: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string
+          id: string
+          logo_url: string | null
+          name: string
+          owner_email: string | null
+          owner_id: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          owner_email?: string | null
+          owner_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          owner_email?: string | null
+          owner_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_offer_coupon: {
+        Args: { _associate_id: string; _offer_id: string }
+        Returns: string
+      }
+      coupon_stock: {
+        Args: { _offer_ids: string[] }
+        Returns: {
+          available: number
+          offer_id: string
+          total: number
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      owns_offer: { Args: { _offer_id: string }; Returns: boolean }
+      owns_store: { Args: { _store_id: string }; Returns: boolean }
+      public_validate: {
+        Args: { _code: string }
+        Returns: {
+          first_name: string
+          member_number: number
+          since: string
+          status: string
+        }[]
+      }
+      validate_associate: {
+        Args: { _query: string }
+        Returns: {
+          full_name: string
+          member_number: number
+          since: string
+          status: string
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "partner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +525,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "partner"],
+    },
   },
 } as const
