@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/club/EmptyState";
 import { formatDate, formatMemberId, formatValidationCode, initials, normalizeText } from "@/lib/format";
+import { resolveDanteAvatar, type DanteAvatarOption } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 type Associate = Tables<"associates">;
@@ -30,6 +31,7 @@ export function AssociatesTab() {
   const [filter, setFilter] = useState<Filter>("todos");
   const [selected, setSelected] = useState<Associate | null>(null);
   const [busy, setBusy] = useState(false);
+
   const list = useQuery({
     queryKey: ["staff", "associates"],
     queryFn: async () => {
@@ -39,7 +41,18 @@ export function AssociatesTab() {
     },
   });
 
+  const avatarsQuery = useQuery({
+    queryKey: ["staff", "dante-avatars-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("dante_avatars").select("id, name, image_url, is_default").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as DanteAvatarOption[];
+    },
+  });
+
   const all = list.data ?? [];
+  const avatars = avatarsQuery.data ?? [];
+
   const counts = { todos: all.length, ativo: all.filter((a) => a.status === "ativo").length, descredenciado: all.filter((a) => a.status !== "ativo").length };
   const visible = useMemo(() => {
     const q = normalizeText(query.trim());
@@ -49,6 +62,11 @@ export function AssociatesTab() {
       return normalizeText(`${a.full_name} ${a.email} d-${a.member_number} d${a.member_number}`).includes(q);
     });
   }, [all, query, filter]);
+
+  function getAvatarSrc(a: Associate): string {
+    if (a.avatar_url) return a.avatar_url;
+    return resolveDanteAvatar(avatars, a.dante_avatar_id);
+  }
 
   async function setStatus(a: Associate, status: "ativo" | "descredenciado") {
     setBusy(true);
@@ -83,21 +101,24 @@ export function AssociatesTab() {
           <EmptyState icon={<Search />} title="Ninguém encontrado">Tente outro nome, e-mail ou ID.</EmptyState>
         ) : (
           <ul className="space-y-3">
-            {visible.map((a) => (
-              <li key={a.id}>
-                <button type="button" onClick={() => setSelected(a)} className="flex w-full items-center gap-4 rounded-3xl border border-border bg-card p-4 text-left shadow-soft transition-colors hover:border-primary-glow/40">
-                  <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary font-friendly text-lg font-semibold text-primary-foreground">
-                    {a.avatar_url ? <img src={a.avatar_url} alt="" className="h-full w-full object-cover" /> : initials(a.full_name)}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{a.full_name || a.email}</span>
-                    <span className="block truncate text-sm text-muted-foreground">{formatMemberId(a.member_number)} · desde {formatDate(a.created_at)}</span>
-                    <span className="mt-1.5 block"><StatusPill status={a.status} /></span>
-                  </span>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
-                </button>
-              </li>
-            ))}
+            {visible.map((a) => {
+              const avatarSrc = getAvatarSrc(a);
+              return (
+                <li key={a.id}>
+                  <button type="button" onClick={() => setSelected(a)} className="flex w-full items-center gap-4 rounded-3xl border border-border bg-card p-4 text-left shadow-soft transition-colors hover:border-primary-glow/40">
+                    <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary font-friendly text-lg font-semibold text-primary-foreground">
+                      {avatarSrc ? <img src={avatarSrc} alt="" className="h-full w-full object-cover" /> : initials(a.full_name)}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold">{a.full_name || a.email}</span>
+                      <span className="block truncate text-sm text-muted-foreground">{formatMemberId(a.member_number)} · desde {formatDate(a.created_at)}</span>
+                      <span className="mt-1.5 block"><StatusPill status={a.status} /></span>
+                    </span>
+                    <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
@@ -109,7 +130,7 @@ export function AssociatesTab() {
               <DialogHeader><DialogTitle className="font-display text-xl">Dados do Associado</DialogTitle></DialogHeader>
               <div className="flex items-center gap-4">
                 <span className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary font-friendly text-xl font-semibold text-primary-foreground">
-                  {selected.avatar_url ? <img src={selected.avatar_url} alt="" className="h-full w-full object-cover" /> : initials(selected.full_name)}
+                  {getAvatarSrc(selected) ? <img src={getAvatarSrc(selected)} alt="" className="h-full w-full object-cover" /> : initials(selected.full_name)}
                 </span>
                 <div className="min-w-0">
                   <p className="truncate font-display text-xl font-semibold">{selected.full_name || "Sem nome"}</p>
