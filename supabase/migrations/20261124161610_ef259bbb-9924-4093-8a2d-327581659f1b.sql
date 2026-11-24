@@ -1,0 +1,1 @@
+alter function public.set_default_dante_avatar(uuid) security invoker;
