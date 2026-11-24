@@ -387,6 +387,10 @@ export type Database = {
           status: string
         }[]
       }
+      set_default_dante_avatar: {
+        Args: { _avatar_id: string }
+        Returns: undefined
+      }
       validate_associate: {
         Args: { _query: string }
         Returns: {
